@@ -4,7 +4,7 @@ Pablo Valencia A01700912
 Fish Toxicity Predictor
 March 27, 2023
 """
-
+import numpy as np
 import pandas as pd
 import linearRegression
 from sklearn.metrics import mean_squared_error, r2_score
@@ -81,6 +81,29 @@ def print_model_predictions(y_test, y_predictions):
     plt.show()
 
 
+def get_user_data():
+    """
+    Reads user input from STDIN to make a prediction.
+
+    :return: List with the values entered by the user to make a prediction.
+    """
+    print('\nUser input: \n')
+
+    CIC0 = float(input('Wiener Connectivity Index (0.667 - 5.926): '))
+    SM1_Dz = float(input('3D-MoRSE descriptor representing electrostatic '
+                         'potential (0.000 - 2.171): '))
+    GATS1i = float(input('Geary Autocorrelation of lag 1 weighted by Atomic'
+                         ' masses (0.396 - 2.920): '))
+    NdsCH = float(input('Number of attached carbon and hydrogen atoms'
+                        ' (0.000 - 4.000): '))
+    NdssC = float(input('Number of attached carbonyl, carboxyl, and '
+                        'thiocarboxyl groups (0.000 - 6.000): '))
+    MLOGP = float(input('Molecular Logarithm of Partition '
+                        'Coefficient (-2.884 - 6.515): '))
+
+    return [CIC0, SM1_Dz, GATS1i, NdsCH, NdssC, MLOGP]
+
+
 def train_model():
     """
     Trains a machine learning model to predict fish toxicity based on chemical
@@ -119,3 +142,13 @@ def train_model():
 
 if __name__ == '__main__':
     model = train_model()
+    stop = False
+
+    while not stop:
+        user_data = np.array(get_user_data())
+
+        print('The predicted LC50 is %.2f\n' %
+              model.predict(user_data))
+
+        stop_input = input('Do you want to make another prediction? yes/no\n')
+        stop = True if stop_input == 'no' else False
